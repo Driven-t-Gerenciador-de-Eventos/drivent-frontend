@@ -1,3 +1,11 @@
+import styled from "styled-components";
+import { toast } from 'react-toastify'
+import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
+import WarningMessage from '../../../components/Dashboard/Warning.jsx'
+import useEnrollment from "../../../hooks/api/useEnrollment.js";
+import { useNavigate } from "react-router-dom";
+
 import { useState, useEffect,useContext } from 'react';
 import { toast } from 'react-toastify';
 import { Await, useNavigate } from 'react-router-dom';
@@ -10,150 +18,111 @@ import ConfirmaBooking from '../../../components/Payment/ConfirmaBooking';
 
 
 export default function Payment() {
-  const token = useToken();
-  const { enrollment } = useEnrollment();
-  console.log(enrollment)
-  let [ticketSelected, setTicketSelected] = useState(null);
-  let [ticketType, setTicketType] = useState();
-  console.log(ticketSelected)
-  
+  const { enrollment, enrollmentLoading, enrollmentError, getEnrollment } = useEnrollment();
 
-  const config = {
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
-  }
+  const navigate = useNavigate()
+  const [ticket, setTicket] = useState();
+  const [hotel, setHotel] = useState();
+  const [subscription, setSubscription] = useState(false);
 
   useEffect(() => {
-    console.log(token)
-    const requisicao = axios.get(`${import.meta.env.VITE_API_URL}/tickets/types`, config);
-
-    requisicao.then(resposta => {
-      //setTicketType((resposta.data))
-      console.log(resposta.data)
-    })
-    requisicao.catch(erro => {
-      console.log((erro.data))
-    });
-  }, []);
-
-  function selectTicket() {
+    const getSubscription = async () => {
+      try {
+        const response = await getEnrollment();
+        setSubscription(true);
+      } catch (err) {
+        console.log(err.response.data);
+        toast('Erro ao encontrar sua inscrição');
+        setSubscription(false);
+      }
+    }
+    getSubscription()
+  }, [])
+  
+  const bookTicket = () =>{
 
   }
+  return(
+    <>
+      <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
 
-
-  if (enrollment == null) {
-    toast('cadastre-se para seguir com pagamento!');
-    return (<Containerg>
-      <h2>Você precisa completar sua inscrição antes
-        de prosseguir pra escolha de ingresso</h2>
-    </Containerg>
-    );
-  } else {
-    return (
-      <Containerg>
-        <h1>Ingresso e pagamento</h1>
-        <h2>Primeiro, escolha sua modalidade de ingresso</h2>
-        <Options>
-          <Box onClick={() => selectTicket() } ticketSelected={ticketSelected}>
-            <h3>Presencial</h3>
-            <h4>Valor</h4>
-          </Box>
-          <Box onClick={() => selectTicket()} ticketSelected={ticketSelected}>
-            <h3>Online</h3>
-            <h4>Valor</h4>
-          </Box>
-        </Options>
-        
-        
-         {!ticketSelected? <></>: < OptionsPresencial />}
-         {!ticketSelected?  <></>: < ConfirmaBooking />}
-         
-
-      </Containerg>
-    )
-  }
-
-
-
-
-
-
+      {subscription === true ? (
+        <>
+          <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
+          <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>
+          <Buttons>
+            <ModalityButton onClick={ () => setHotel(false)}
+              className={hotel === false ? 'selected' : ''}
+            >
+              <h7>Sem Hotel</h7>
+              <p>+ R$ 0</p>
+            </ModalityButton>
+            <ModalityButton onClick={ () => setHotel(true)}
+              className={hotel === true ? 'selected' : ''}
+            >
+              <h7>Com Hotel</h7>
+              <p>+ R$ 350</p>
+            </ModalityButton>
+          </Buttons>
+          <StyledTypography variant="h6">Fechado! O total ficou em <strong>R$ 600</strong>. Agora é só confirmar:</StyledTypography>
+          <BookTicketButton onClick={ () => bookTicket()}>RESERVAR INGRESSO</BookTicketButton>
+        </>
+      ) : (
+        <WarningMessage message="Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso" />
+      )}
+    </>
+  )
 }
 
-const Containerg = styled.div`
+const StyledTypography = styled(Typography)`
+  margin-bottom: 20px!important;
+  color: #8E8E8E;
+
+  &:nth-child(1) {
+    color: #000000;
+  }
+`;
+
+const Buttons = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 40px;
+`
+
+const ModalityButton = styled.div`
+  cursor: pointer;
+  width: 145px;
+  height: 145px;
+  border-radius: 20px;
+  border: 1px solid #CECECE;
   display: flex;
   flex-direction: column;
- // box-shadow: 2px 0 10px 0 rgba(0,0,0,0.1);
-  width: 100%;
-  text-align:center;
-  h1{
-    font-family: Roboto;
-font-size: 34px;
-font-weight: 400;
-line-height: 40px;
-letter-spacing: 0em;
-text-align: left;
-
-color: #000;
-margin-bottom: 30px;
-
-  }
-  h2{
-
-    font-family: Roboto;
-font-size: 20px;
-font-weight: 400;
-line-height: 23px;
-letter-spacing: 0em;
-text-align: left;
-
-    color: #8E8E8E;
-
-  }
-
-
-`
-const Options = styled.div`
-
-  display: flex;
- 
- 
- 
-`
-const Box = styled.div`
-width: 145px;
-height: 145px;
-border: 1px solid #CECECE;
-border-radius: 20px;
-background-color: ${ticketSelected=>ticketSelected.ticketSelected ? '#FFEED2' : '#FFFFFF'};
-
-
-margin-top:10px;
-margin-right: 25px;
-  display: flex;
- flex-direction: column;
-  justify-content:center;
   align-items: center;
+  justify-content: center;
+  margin-right: 24px;
 
-  h3{
-    font-family: Roboto;
-font-size: 16px;
-font-weight: 400;
-line-height: 19px;
-letter-spacing: 0em;
-text-align: center;
-color: #454545;
+  h7{
+    color: #454545;
+    font-size: 16px;
+    margin-bottom: 3px;
   }
-  h4{
-    font-family: Roboto;
-font-size: 14px;
-font-weight: 400;
-line-height: 16px;
-letter-spacing: 0em;
-text-align: center;
-color: #898989;
+
+  p{
+    color: #898989;
+    font-size: 14px;
   }
- 
+
+  &.selected{
+    border: none;
+    background: #FFEED2;
+  }
 `
-  ;
+const BookTicketButton = styled.button`
+  cursor: pointer;
+  padding: 11px;
+  border-radius: 4px;
+  border: none;
+  background: #E0E0E0;
+  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+`
