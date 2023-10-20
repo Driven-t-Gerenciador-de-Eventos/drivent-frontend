@@ -1,4 +1,4 @@
-import { useState, useEffect,useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { Await, useNavigate } from 'react-router-dom';
 import useToken from '../../../hooks/useToken.js';
@@ -14,9 +14,10 @@ export default function Payment() {
   const { enrollment } = useEnrollment();
   console.log(enrollment)
   let [ticketSelected, setTicketSelected] = useState(null);
+  let [bookSelected, setBookSelected] = useState(null);
   let [ticketType, setTicketType] = useState();
   console.log(ticketSelected)
-  
+
 
   const config = {
     headers: {
@@ -29,7 +30,7 @@ export default function Payment() {
     const requisicao = axios.get(`${import.meta.env.VITE_API_URL}/tickets/types`, config);
 
     requisicao.then(resposta => {
-      //setTicketType((resposta.data))
+      setTicketType((resposta.data))
       console.log(resposta.data)
     })
     requisicao.catch(erro => {
@@ -37,11 +38,17 @@ export default function Payment() {
     });
   }, []);
 
-  function selectTicket() {
-
+  function selectTicket(Option) {
+    if (Option == ticketSelected) {
+      setTicketSelected(null)
+      setBookSelected(null)
+    } else {
+      setTicketSelected(Option)
+      setBookSelected(null)
+    }
   }
 
-
+  console.log(bookSelected)
   if (enrollment == null) {
     toast('cadastre-se para seguir com pagamento!');
     return (<Containerg>
@@ -55,20 +62,21 @@ export default function Payment() {
         <h1>Ingresso e pagamento</h1>
         <h2>Primeiro, escolha sua modalidade de ingresso</h2>
         <Options>
-          <Box onClick={() => selectTicket() } ticketSelected={ticketSelected}>
+          <Box onClick={() => selectTicket("Presencial")} ticketSelected={ticketSelected == "Presencial" ? "selected" : "noSelected"}>
             <h3>Presencial</h3>
             <h4>Valor</h4>
           </Box>
-          <Box onClick={() => selectTicket()} ticketSelected={ticketSelected}>
+          <Box onClick={() => selectTicket("Online")} ticketSelected={ticketSelected == "Online" ? "selected" : "noSelected"}>
             <h3>Online</h3>
             <h4>Valor</h4>
           </Box>
         </Options>
-        
-        
-         {!ticketSelected? <></>: < OptionsPresencial />}
-         {!ticketSelected?  <></>: < ConfirmaBooking />}
-         
+
+
+        {ticketSelected == "Presencial" ? < OptionsPresencial setBookSelected={setBookSelected} /> : <></>}
+
+        {bookSelected ? < ConfirmaBooking /> : <></>}
+
 
       </Containerg>
     )
@@ -126,7 +134,7 @@ width: 145px;
 height: 145px;
 border: 1px solid #CECECE;
 border-radius: 20px;
-background-color: ${ticketSelected=>ticketSelected.ticketSelected ? '#FFEED2' : '#FFFFFF'};
+background-color: ${ticketSelected => ticketSelected.ticketSelected == "selected" ? '#FFEED2' : '#FFFFFF'};
 
 
 margin-top:10px;

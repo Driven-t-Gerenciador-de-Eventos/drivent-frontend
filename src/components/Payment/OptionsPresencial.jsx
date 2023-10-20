@@ -1,25 +1,38 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components"
 
-export default function OptionsPresencial() {
-    let [ticketSelected, setTicketSelected] = useState(null);
+export default function OptionsPresencial({ setBookSelected }) {
+  let [ticketSelected, setTicketSelected] = useState(null);
 
-return(
+
+  function selectTicket(Option) {
+    if (Option == ticketSelected) {
+      setTicketSelected(null)
+      setBookSelected(null)
+
+    } else {
+      setBookSelected(Option)
+      setTicketSelected(Option)
+      
+    }
+  }
+
+  return (
     <Containerg>
-    <h2>Ótimo! Agora escolha sua modalidade de hospedagem</h2>
+      <h2>Ótimo! Agora escolha sua modalidade de hospedagem</h2>
 
-        <Options>
-          <Box onClick={() => selectTicket()} ticketSelected={ticketSelected}>
-            <h3>Presencial</h3>
-            <h4>Valor</h4>
-          </Box>
-          <Box onClick={() => selectTicket()} ticketSelected={ticketSelected}>
-            <h3>Online</h3>
-            <h4>Valor</h4>
-          </Box>
-        </Options>
-        </Containerg>
-)
+      <Options>
+        <Box onClick={() => selectTicket("sHotel")} ticketSelected={ticketSelected == "sHotel" ? "selected" : "noSelected"}>
+          <h3>sem Hotel</h3>
+          <h4>Valor</h4>
+        </Box>
+        <Box onClick={() => selectTicket("cHotel")} ticketSelected={ticketSelected == "cHotel" ? "selected" : "noSelected"}>
+          <h3>com Hotel</h3>
+          <h4>Valor</h4>
+        </Box>
+      </Options>
+    </Containerg>
+  )
 
 }
 
@@ -68,7 +81,7 @@ width: 145px;
 height: 145px;
 border: 1px solid #CECECE;
 border-radius: 20px;
-background-color: ${ticketSelected=>ticketSelected.ticketSelected ? '#FFEED2' : '#FFFFFF'};
+background-color: ${ticketSelected => ticketSelected.ticketSelected == "selected" ? '#FFEED2' : '#FFFFFF'};
 
 
 
