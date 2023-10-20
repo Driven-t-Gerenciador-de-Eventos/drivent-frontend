@@ -3,13 +3,13 @@ import styled from "styled-components"
 
 export default function ConfirmaBooking() {
 
-return(
+  return (
     <Containerg>
-    <h2>Fechado! O total ficou em R$ 100. Agora é só confirmar:</h2>
-    <Confirm>RESERVAR INGRESSO</Confirm>
-      
-        </Containerg>
-)
+      <StyledTypography variant="h6">Fechado! O total ficou em <strong>R$ 600</strong>. Agora é só confirmar:</StyledTypography>
+      <BookTicketButton onClick={() => bookTicket()}>RESERVAR INGRESSO</BookTicketButton>
+
+    </Containerg>
+  )
 
 }
 
@@ -44,9 +44,26 @@ text-align: left;
     color: #8E8E8E;
 
   }
-
-
 `
+
+const StyledTypography = styled(Typography)`
+  margin-bottom: 20px!important;
+  color: #8E8E8E;
+
+  &:nth-child(1) {
+    color: #000000;
+  }
+`;
+const BookTicketButton = styled.button`
+  cursor: pointer;
+  padding: 11px;
+  border-radius: 4px;
+  border: none;
+  background: #E0E0E0;
+  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+`
+
 const Options = styled.div`
 
   display: flex;
