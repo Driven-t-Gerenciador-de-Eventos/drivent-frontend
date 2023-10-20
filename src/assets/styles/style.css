@@ -6,5 +6,12 @@
 }
 
 body {
-  font-family: "Lexend Deca", sans-serif;
+  font-family: "Roboto", sans-serif;
+}
+
+h8{
+  color: #454545;
+  font-size: 20px;
+  text-align: center;
+  line-height: 120%;
 }
