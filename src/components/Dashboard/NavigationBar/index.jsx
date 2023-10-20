@@ -14,6 +14,9 @@ import NavigationButton from './NavigationButton';
 
 export default function NavigationBar() {
   const location = useLocation();
+ 
+ 
+
 
   function isActive(buttonPath) {
     return location.pathname === buttonPath;
@@ -28,7 +31,7 @@ export default function NavigationBar() {
         </NavigationButton>
       </Link>
 
-      <Link to="/dashboard/payment">
+      <Link to="/dashboard/payment" >
         <NavigationButton active={isActive('/dashboard/paymen')}>
           <FaMoneyBill />
           <span>Pagamento</span>
