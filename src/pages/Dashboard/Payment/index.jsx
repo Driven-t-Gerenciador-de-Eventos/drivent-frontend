@@ -1,12 +1,33 @@
 import styled from "styled-components";
+import { toast } from 'react-toastify'
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import WarningMessage from '../../../components/Dashboard/Warning.jsx'
+import useEnrollment from "../../../hooks/api/useEnrollment.js";
+import { useNavigate } from "react-router-dom";
 
 export default function Payment() {
-  const [ticket, setTicket] = useState(false);
-  const [hotel, setHotel] = useState();
+  const { enrollment, enrollmentLoading, enrollmentError, getEnrollment } = useEnrollment();
 
+  const navigate = useNavigate()
+  const [ticket, setTicket] = useState();
+  const [hotel, setHotel] = useState();
+  const [subscription, setSubscription] = useState(false);
+
+  useEffect(() => {
+    const getSubscription = async () => {
+      try {
+        const response = await getEnrollment();
+        setSubscription(true);
+      } catch (err) {
+        console.log(err.response.data);
+        toast('Erro ao encontrar sua inscrição');
+        setSubscription(false);
+      }
+    }
+    getSubscription()
+  }, [])
+  
   const bookTicket = () =>{
 
   }
@@ -14,7 +35,7 @@ export default function Payment() {
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
 
-      {ticket === true ? (
+      {subscription === true ? (
         <>
           <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
           <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>
