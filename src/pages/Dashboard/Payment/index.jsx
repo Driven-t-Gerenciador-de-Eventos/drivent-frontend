@@ -11,7 +11,7 @@ export default function Payment() {
 
   const navigate = useNavigate()
   const [ticket, setTicket] = useState();
-  const [hotel, setHotel] = useState();
+  const [hotel, setHotel] = useState('');
   const [subscription, setSubscription] = useState(false);
 
   useEffect(() => {
@@ -53,8 +53,16 @@ export default function Payment() {
               <p>+ R$ 350</p>
             </ModalityButton>
           </Buttons>
-          <StyledTypography variant="h6">Fechado! O total ficou em <strong>R$ 600</strong>. Agora é só confirmar:</StyledTypography>
-          <BookTicketButton onClick={ () => bookTicket()}>RESERVAR INGRESSO</BookTicketButton>
+          {hotel === '' ? (
+            <>
+            </>
+          ) : (
+            <>
+              <StyledTypography variant="h6">Fechado! O total ficou em <strong>R$ 600</strong>. Agora é só confirmar:</StyledTypography>
+              <BookTicketButton onClick={ () => bookTicket()}>RESERVAR INGRESSO</BookTicketButton>
+            </>
+          ) }
+          
         </>
       ) : (
         <WarningMessage message="Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso" />
