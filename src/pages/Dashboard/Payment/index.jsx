@@ -1,12 +1,18 @@
-import styled from "styled-components";
-import { toast } from 'react-toastify'
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
 import WarningMessage from '../../../components/Dashboard/Warning.jsx'
-import useEnrollment from "../../../hooks/api/useEnrollment.js";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useContext } from 'react';
+import { toast } from 'react-toastify';
+import { Await, useNavigate } from 'react-router-dom';
+import useToken from '../../../hooks/useToken.js';
+import useEnrollment from '../../../hooks/api/useEnrollment';
+import styled from 'styled-components';
+import axios from 'axios';
+import OptionsPresencial from '../../../components/Payment/OptionsPresencial';
+import ConfirmaBooking from '../../../components/Payment/ConfirmaBooking';
+
 
 export default function Payment() {
+
   const { enrollment, enrollmentLoading, enrollmentError, getEnrollment } = useEnrollment();
 
   const navigate = useNavigate()
@@ -14,6 +20,33 @@ export default function Payment() {
   const [hotel, setHotel] = useState('');
   const [subscription, setSubscription] = useState(false);
 
+  const token = useToken();
+
+  console.log(enrollment)
+  let [ticketSelected, setTicketSelected] = useState(null);
+  let [bookSelected, setBookSelected] = useState(null);
+  let [ticketType, setTicketType] = useState();
+  console.log(ticketSelected)
+
+
+  const config = {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  }
+
+  useEffect(() => {
+    console.log(token)
+    const requisicao = axios.get(`${import.meta.env.VITE_API_URL}/tickets/types`, config);
+
+    requisicao.then(resposta => {
+      //setTicketType((resposta.data))
+      console.log(resposta.data)
+    })
+    requisicao.catch(erro => {
+      console.log((erro.data))
+    });
+  }, []);
   useEffect(() => {
     const getSubscription = async () => {
       try {
@@ -27,65 +60,51 @@ export default function Payment() {
     }
     getSubscription()
   }, [])
-  
-  const bookTicket = () =>{
 
+  function selectTicket(Option) {
+    if (Option == ticketSelected) {
+      setTicketSelected(null)
+      setBookSelected(null)
+    } else {
+      setTicketSelected(Option)
+      setBookSelected(null)
+    }
   }
-  return(
+
+  return (
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
 
       {subscription === true ? (
         <>
           <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
-          <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>
           <Buttons>
-            <ModalityButton onClick={ () => setHotel(false)}
-              className={hotel === false ? 'selected' : ''}
-            >
-              <h7>Sem Hotel</h7>
-              <p>+ R$ 0</p>
+            <ModalityButton onClick={() => selectTicket("Presencial")} ticketSelected={ticketSelected == "Presencial" ? "selected" : "noSelected"}>
+              <h7>Presencial</h7>
+              <p>Valor</p>
             </ModalityButton>
-            <ModalityButton onClick={ () => setHotel(true)}
-              className={hotel === true ? 'selected' : ''}
-            >
-              <h7>Com Hotel</h7>
-              <p>+ R$ 350</p>
+            <ModalityButton onClick={() => selectTicket("Online")} ticketSelected={ticketSelected == "Online" ? "selected" : "noSelected"}>
+              <h7>Online</h7>
+              <p>Valor</p>
             </ModalityButton>
           </Buttons>
-          {hotel === '' ? (
-            <>
-            </>
-          ) : (
-            <>
-              <StyledTypography variant="h6">Fechado! O total ficou em <strong>R$ 600</strong>. Agora é só confirmar:</StyledTypography>
-              <BookTicketButton onClick={ () => bookTicket()}>RESERVAR INGRESSO</BookTicketButton>
-            </>
-          ) }
-          
+
+          {ticketSelected == "Presencial" ? < OptionsPresencial setBookSelected={setBookSelected} hotel={hotel} setHotel={setHotel} /> : <></>}
+          {bookSelected||ticketSelected == "Online"  ? < ConfirmaBooking /> : <></>}
         </>
       ) : (
         <WarningMessage message="Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso" />
       )}
     </>
   )
+
 }
-
-const StyledTypography = styled(Typography)`
-  margin-bottom: 20px!important;
-  color: #8E8E8E;
-
-  &:nth-child(1) {
-    color: #000000;
-  }
-`;
 
 const Buttons = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 40px;
 `
-
 const ModalityButton = styled.div`
   cursor: pointer;
   width: 145px;
@@ -97,6 +116,9 @@ const ModalityButton = styled.div`
   align-items: center;
   justify-content: center;
   margin-right: 24px;
+  background-color:  ${ticketSelected => ticketSelected.ticketSelected == "selected" ? '#FFEED2' : '#FFFFFF'};
+  margin-top:10px;
+
 
   h7{
     color: #454545;
@@ -114,12 +136,13 @@ const ModalityButton = styled.div`
     background: #FFEED2;
   }
 `
-const BookTicketButton = styled.button`
-  cursor: pointer;
-  padding: 11px;
-  border-radius: 4px;
-  border: none;
-  background: #E0E0E0;
-  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.25);
-  font-size: 14px;
-`
+
+const StyledTypography = styled(Typography)`
+  margin-bottom: 20px!important;
+  color: #8E8E8E;
+
+  &:nth-child(1) {
+    color: #000000;
+  }
+`;
+
