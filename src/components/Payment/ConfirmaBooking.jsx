@@ -3,11 +3,11 @@ import styled from "styled-components";
 import Typography from '@mui/material/Typography';
 
 
-export default function ConfirmaBooking() {
+export default function ConfirmaBooking({total}) {
 
   return (
     <>
-      <StyledTypography variant="h6">Fechado! O total ficou em <strong>R$ 600</strong>. Agora é só confirmar:</StyledTypography>
+      <StyledTypography variant="h6">Fechado! O total ficou em <strong>R$ {total},00</strong>. Agora é só confirmar:</StyledTypography>
       <BookTicketButton onClick={() => bookTicket()}>RESERVAR INGRESSO</BookTicketButton>
 
     </>
