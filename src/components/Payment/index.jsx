@@ -1,5 +1,6 @@
-import PaymentHeader from "../../components/Payment/header"
-import PaymentSummary from "./summary";
+import PaymentHeader from "./Header"
+import PaymentSummary from "./Summary";
+import PaymentForm from "./Card";
 
 const mockInfo = {
     type: "Presencial",
@@ -11,6 +12,7 @@ export default function PaymentComponent() {
     <>
         <PaymentHeader />
         <PaymentSummary props={mockInfo}/>
+        <PaymentForm />
     </>
   );
 }
