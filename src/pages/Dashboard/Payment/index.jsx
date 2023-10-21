@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
 import WarningMessage from '../../../components/Dashboard/Warning.jsx'
-import { useState, useEffect,useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { Await, useNavigate } from 'react-router-dom';
 import useToken from '../../../hooks/useToken.js';
@@ -21,12 +21,13 @@ export default function Payment() {
   const [subscription, setSubscription] = useState(false);
 
   const token = useToken();
-  
+
   console.log(enrollment)
   let [ticketSelected, setTicketSelected] = useState(null);
+  let [bookSelected, setBookSelected] = useState(null);
   let [ticketType, setTicketType] = useState();
   console.log(ticketSelected)
-  
+
 
   const config = {
     headers: {
@@ -70,27 +71,26 @@ export default function Payment() {
     }
   }
 
-
-  return(
+  return (
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
 
       {subscription === true ? (
         <>
           <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
-          <Options>
-          <Box onClick={() => selectTicket() } ticketSelected={ticketSelected}>
-            <h3>Presencial</h3>
-            <h4>Valor</h4>
-          </Box>
-          <Box onClick={() => selectTicket()} ticketSelected={ticketSelected}>
-            <h3>Online</h3>
-            <h4>Valor</h4>
-          </Box>
-        </Options>
-          <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>
-          {!ticketSelected? <></>: < OptionsPresencial />}
-          {!ticketSelected?  <></>: < ConfirmaBooking />}
+          <Buttons>
+            <ModalityButton onClick={() => selectTicket("Presencial")} ticketSelected={ticketSelected == "Presencial" ? "selected" : "noSelected"}>
+              <h7>Presencial</h7>
+              <p>Valor</p>
+            </ModalityButton>
+            <ModalityButton onClick={() => selectTicket("Online")} ticketSelected={ticketSelected == "Online" ? "selected" : "noSelected"}>
+              <h7>Online</h7>
+              <p>Valor</p>
+            </ModalityButton>
+          </Buttons>
+
+          {ticketSelected == "Presencial" ? < OptionsPresencial setBookSelected={setBookSelected} hotel={hotel} setHotel={setHotel} /> : <></>}
+          {bookSelected||ticketSelected == "Online"  ? < ConfirmaBooking /> : <></>}
         </>
       ) : (
         <WarningMessage message="Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso" />
@@ -98,64 +98,27 @@ export default function Payment() {
     </>
   )
 
-
-
 }
-
-const Containerg = styled.div`
-  display: flex;
-  flex-direction: column;
- // box-shadow: 2px 0 10px 0 rgba(0,0,0,0.1);
-  width: 100%;
-  text-align:center;
-  h1{
-    font-family: Roboto;
-font-size: 34px;
-font-weight: 400;
-line-height: 40px;
-letter-spacing: 0em;
-text-align: left;
-
-color: #000;
-margin-bottom: 30px;
-
-  }
-  h2{
-
-    font-family: Roboto;
-font-size: 20px;
-font-weight: 400;
-line-height: 23px;
-letter-spacing: 0em;
-text-align: left;
-
-    color: #8E8E8E;
-
-  &:nth-child(1) {
-    color: #000000;
-  }
-`;
 
 const Buttons = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 40px;
 `
-const Box = styled.div`
-width: 145px;
-height: 145px;
-border: 1px solid #CECECE;
-border-radius: 20px;
-background-color: ${ticketSelected=>ticketSelected.ticketSelected ? '#FFEED2' : '#FFFFFF'};
-
-
-margin-top:10px;
-margin-right: 25px;
+const ModalityButton = styled.div`
+  cursor: pointer;
+  width: 145px;
+  height: 145px;
+  border-radius: 20px;
+  border: 1px solid #CECECE;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   margin-right: 24px;
+  background-color:  ${ticketSelected => ticketSelected.ticketSelected == "selected" ? '#FFEED2' : '#FFFFFF'};
+  margin-top:10px;
+
 
   h7{
     color: #454545;
@@ -173,15 +136,7 @@ margin-right: 25px;
     background: #FFEED2;
   }
 `
-const BookTicketButton = styled.button`
-  cursor: pointer;
-  padding: 11px;
-  border-radius: 4px;
-  border: none;
-  background: #E0E0E0;
-  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.25);
-  font-size: 14px;
-`
+
 const StyledTypography = styled(Typography)`
   margin-bottom: 20px!important;
   color: #8E8E8E;
@@ -190,3 +145,4 @@ const StyledTypography = styled(Typography)`
     color: #000000;
   }
 `;
+

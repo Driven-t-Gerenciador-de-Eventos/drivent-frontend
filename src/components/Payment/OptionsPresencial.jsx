@@ -1,40 +1,34 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components"
+import styled from "styled-components";
+import Typography from '@mui/material/Typography';
 
-export default function OptionsPresencial({ setBookSelected }) {
+
+export default function OptionsPresencial({ setBookSelected, hotel, setHotel }) {
   let [ticketSelected, setTicketSelected] = useState(null);
 
 
-  function selectTicket(Option) {
-    if (Option == ticketSelected) {
-      setTicketSelected(null)
-      setBookSelected(null)
+  const bookTicket = () =>{
 
-    } else {
-      setBookSelected(Option)
-      setTicketSelected(Option)
-      
-    }
   }
 
   return (
     <Containerg>
-      <h2>Ótimo! Agora escolha sua modalidade de hospedagem</h2>
+      <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>
 
       <Buttons>
-            <ModalityButton onClick={ () => setHotel(false)}
-              className={hotel === false ? 'selected' : ''}
-            >
-              <h7>Sem Hotel</h7>
-              <p>+ R$ 0</p>
-            </ModalityButton>
-            <ModalityButton onClick={ () => setHotel(true)}
-              className={hotel === true ? 'selected' : ''}
-            >
-              <h7>Com Hotel</h7>
-              <p>+ R$ 350</p>
-            </ModalityButton>
-          </Buttons>
+        <ModalityButton onClick={() => setHotel(false)}
+          className={hotel === false ? 'selected' : ''}
+        >
+          <h7>Sem Hotel</h7>
+          <p>+ R$ 0</p>
+        </ModalityButton>
+        <ModalityButton onClick={() => setHotel(true)}
+          className={hotel === true ? 'selected' : ''}
+        >
+          <h7>Com Hotel</h7>
+          <p>+ R$ 350</p>
+        </ModalityButton>
+      </Buttons>
     </Containerg>
   )
 
@@ -45,7 +39,7 @@ const Containerg = styled.div`
   flex-direction: column;
  // box-shadow: 2px 0 10px 0 rgba(0,0,0,0.1);
   width: 100%;
-  text-align:center;
+
   h1{
     font-family: Roboto;
 font-size: 34px;
@@ -80,45 +74,9 @@ const Options = styled.div`
  
  
 `
-const Box = styled.div`
-width: 145px;
-height: 145px;
-border: 1px solid #CECECE;
-border-radius: 20px;
-background-color: ${ticketSelected => ticketSelected.ticketSelected == "selected" ? '#FFEED2' : '#FFFFFF'};
+  
 
-
-
-margin-top:10px;
-margin-right: 25px;
-  display: flex;
- flex-direction: column;
-  justify-content:center;
-  align-items: center;
-
-  h3{
-    font-family: Roboto;
-font-size: 16px;
-font-weight: 400;
-line-height: 19px;
-letter-spacing: 0em;
-text-align: center;
-color: #454545;
-  }
-  h4{
-    font-family: Roboto;
-font-size: 14px;
-font-weight: 400;
-line-height: 16px;
-letter-spacing: 0em;
-text-align: center;
-color: #898989;
-  }
- 
-`
-  ;
-
-  const Buttons = styled.div`
+const Buttons = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 40px;
@@ -152,4 +110,9 @@ const ModalityButton = styled.div`
     background: #FFEED2;
   }
 `
+const StyledTypography = styled(Typography)`
+  margin-bottom: 20px!important;
+  color: #8E8E8E;
 
+  
+`;

@@ -3,7 +3,7 @@ import styled from "styled-components";
 export default function WarningMessage({message}){
     return(
         <AlertDiv>
-            <h8>{message}</h8>
+            <h2>{message}</h2>
         </AlertDiv>
     )
 }
@@ -15,4 +15,5 @@ const AlertDiv = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+   
 `
