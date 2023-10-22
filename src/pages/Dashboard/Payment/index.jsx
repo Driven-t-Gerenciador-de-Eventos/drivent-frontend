@@ -36,7 +36,7 @@ export default function Payment() {
     const objetoRemoto = arrayDeObjetos.find(objeto => objeto.isRemote === true);
     return [menorPreco, objetoRemoto];
   }
-  
+  console.log(ticketSelected)
 
   const config = {
     headers: {
@@ -69,18 +69,16 @@ export default function Payment() {
     getSubscription()
   }, [])
 
-  function selectTicket(Option, value) {
-    if (Option == ticketSelected) {
+  function selectTicket(ticket) {
+    if (ticket.name == ticketSelected) {
       setTicketSelected(null)
       setBookSelected(null)
     } else {
-      setTicketSelected(Option)
-      setTotal(value)
+      setTicketSelected(ticket)
+      setTotal(ticket.price)
       setBookSelected(null)
     }
   }
-  console.log(ticketType)
-  console.log(total)
 
   return (
     <>
@@ -90,19 +88,17 @@ export default function Payment() {
         <>
           <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
           <Buttons>
-            <ModalityButton onClick={() => selectTicket("Presencial", ticketType[0]?.price)} ticketSelected={ticketSelected == "Presencial" ? "selected" : "noSelected"}>
-              <h7>{ticketType[0]?.name}</h7>
-              <p>R$ {ticketType[0]?.price},00</p>
+          {ticketType?.map((ticketType) => <ModalityButton key={ticketType?.id} onClick={() => selectTicket(ticketType)} ticketSelected={ticketSelected?.name == ticketType?.name ? "selected" : "noSelected"}>
+              <h7>{ticketType?.name}</h7>
+              <p>R$ {ticketType?.price},00</p>
             </ModalityButton>
-            <ModalityButton onClick={() => selectTicket("Online", ticketType[1]?.price)} ticketSelected={ticketSelected == "Online" ? "selected" : "noSelected"}>
-              <h7>{ticketType[1]?.name}</h7>
-              <p>R$ {ticketType[1]?.price},00</p>
-            </ModalityButton>
+            )}
+            
           </Buttons>
-          {ticketSelected == "Presencial" ? <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>: <></>}
+          {!ticketSelected?.isRemote ? <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>: <></>}
 
-          {ticketSelected == "Presencial" ? < OptionsPresencial setBookSelected={setBookSelected} hotel={hotel} setHotel={setHotel} /> : <></>}
-          {bookSelected||ticketSelected == "Online"  ? < ConfirmaBooking total={total} /> : <></>}
+          {!ticketSelected?.isRemote ? < OptionsPresencial setBookSelected={setBookSelected} hotel={hotel} setHotel={setHotel} /> : <></>}
+          {bookSelected||ticketSelected?.isRemote ? < ConfirmaBooking total={total} ticket={ticketSelected} /> : <></>}
         </>
       ) : (
         <WarningMessage message="Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso" />
@@ -128,7 +124,7 @@ const ModalityButton = styled.div`
   align-items: center;
   justify-content: center;
   margin-right: 24px;
-  background-color:  ${ticketSelected => ticketSelected.ticketSelected == "selected" ? '#FFEED2' : '#FFFFFF'};
+  background-color:  ${ticketSelected => ticketSelected?.ticketSelected == "selected" ? '#FFEED2' : '#FFFFFF'};
   margin-top:10px;
 
 
