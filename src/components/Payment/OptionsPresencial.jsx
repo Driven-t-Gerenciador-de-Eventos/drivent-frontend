@@ -13,8 +13,7 @@ export default function OptionsPresencial({ setBookSelected, hotel, setHotel }) 
 
   return (
     <Containerg>
-      <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>
-
+      
       <Buttons>
         <ModalityButton onClick={() => setHotel(false)}
           className={hotel === false ? 'selected' : ''}
