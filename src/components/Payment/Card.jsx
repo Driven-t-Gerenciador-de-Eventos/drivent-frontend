@@ -38,6 +38,8 @@ export default function PaymentForm() {
     //     e.preventDefault();
     // };
 
+    //add botão aqui e não no index? para lidar com o onSubmit, ao inves de ter uma funcao onClick
+
     return (
         <>
             <Typography variant="h6" color="#8E8E8E">Pagamento</Typography>
