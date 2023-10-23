@@ -22,7 +22,7 @@ export default function PaymentForm() {
         if (name === "number") {
             value = formatCreditCardNumber(value);
         } else if (name === "expiry") {
-             value = formatExpirationDate(value);
+            value = formatExpirationDate(value);
         } else if (name === "cvc") {
             value = formatCVC(value);
         }
@@ -34,25 +34,23 @@ export default function PaymentForm() {
         setState((prev) => ({ ...prev, focus: evt.target.name }));
     }
 
-    // const handleSubmit = e => {
-    //     e.preventDefault();
-    // };
-
-    //add botão aqui e não no index? para lidar com o onSubmit, ao inves de ter uma funcao onClick
+    const handleSubmit = e => {
+        e.preventDefault();
+        alert("oi")
+    };
 
     return (
         <>
             <Typography variant="h6" color="#8E8E8E">Pagamento</Typography>
-
-            <Container>
-                <Cards
-                    number={state.number}
-                    expiry={state.expiry}
-                    cvc={state.cvc}
-                    name={state.name}
-                    focused={state.focus}
-                />
-                <FormWrapper>
+            <FormWrapper onSubmit={handleSubmit}>
+                <Container>
+                    <Cards
+                        number={state.number}
+                        expiry={state.expiry}
+                        cvc={state.cvc}
+                        name={state.name}
+                        focused={state.focus}
+                    />
                     <Form>
                         <input
                             type="tel"
@@ -98,14 +96,14 @@ export default function PaymentForm() {
                             />
                         </div>
                     </Form>
-                </FormWrapper>
-            </Container>
-
+                </Container>
+                <FinalizeButton type="submit">FINALIZAR PAGAMENTO</FinalizeButton>
+            </FormWrapper>
         </>
     );
 }
 
-const Container = styled.div`
+const Container = styled.span`
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -113,7 +111,7 @@ const Container = styled.div`
     margin: 10px 0px;
 `
 
-const Form = styled.form`
+const Form = styled.div`
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -142,4 +140,15 @@ const Form = styled.form`
     .small{
         width: 50%;
     }
+`
+
+const FinalizeButton = styled.button`
+  cursor: pointer;
+  padding: 11px;
+  border-radius: 4px;
+  border: none;
+  background: #E0E0E0;
+  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+  margin-top: 25px;
 `
