@@ -9,12 +9,11 @@ export default function PaymentComponent({info}) {
 
   return (
     <>
-        <PaymentHeader />
         <PaymentSummary props={info}/>
         {
           paid ? 
           <PaidMessage /> : 
-          <PaymentForm props={[paid, setPaid]}/>
+          <PaymentForm props={[paid, setPaid, info.ticket]}/>
         }
     </>
   );

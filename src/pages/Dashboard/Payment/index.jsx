@@ -100,10 +100,10 @@ export default function Payment() {
             {!ticketSelected?.isRemote ? <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>: <></>}
 
             {!ticketSelected?.isRemote ? < OptionsPresencial setBookSelected={setBookSelected} hotel={hotel} setHotel={setHotel} /> : <></>}
-            {bookSelected||ticketSelected?.isRemote ? < ConfirmaBooking total={total} ticket={ticketSelected} setCardPage={setCardPage} /> : <></>}
+            {bookSelected||ticketSelected?.isRemote ? < ConfirmaBooking total={total} ticket={ticketSelected} setCardPage={setCardPage} setTicket={setTicket}/> : <></>}
           </>          
         ) : (
-          <PaymentComponent info={{isRemote: ticketSelected.isRemote, price: total, hotel: ticketSelected.includesHotel}}/>
+          <PaymentComponent info={{isRemote: ticketSelected.isRemote, price: total, hotel: ticketSelected.includesHotel, ticket: ticket}}/>
         )
       ) : (
         <WarningMessage message="Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso" />

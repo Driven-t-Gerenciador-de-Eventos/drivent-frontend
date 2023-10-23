@@ -12,9 +12,9 @@ export function formatCreditCardNumber(value) {
     const clearValue = clearNumber(value);
     let nextValue;
 
-    const issuer = Payment.fns.cardType(value);
+    const issuerFound = Payment.fns.cardType(value);
 
-    switch (issuer) {
+    switch (issuerFound) {
         case "amex":
             nextValue = `${clearValue.slice(0, 4)} ${clearValue.slice(
                 4,
@@ -35,8 +35,8 @@ export function formatCreditCardNumber(value) {
             break;
     }
 
-    return nextValue.trim();
-
+    let object = {value: nextValue.trim(), issuerFound}
+    return object;
 }
 
 export function formatCVC(value, prevValue, allValues = {}) {
