@@ -1,11 +1,11 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
-export default function WarningMessage({message}){
-    return(
-        <AlertDiv>
-            <h2>{message}</h2>
-        </AlertDiv>
-    )
+export default function WarningMessage({ message }) {
+  return (
+    <AlertDiv>
+      <h2>{message}</h2>
+    </AlertDiv>
+  );
 }
 
 const AlertDiv = styled.div`
