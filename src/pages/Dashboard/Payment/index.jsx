@@ -17,13 +17,17 @@ export default function Payment() {
 
   const navigate = useNavigate()
   const [ticket, setTicket] = useState();
-  const [hotel, setHotel] = useState();
+  const [hotel, setHotel] = useState(null);
   const [subscription, setSubscription] = useState(false);
   const token = useToken();
   let [total, setTotal ] = useState(null);
   let [ticketSelected, setTicketSelected] = useState(null);
   let [bookSelected, setBookSelected] = useState(null);
   let [ticketType, setTicketType] = useState();
+
+  const [ingressosSemHotel, setIngressosSemHotel] = useState([]);
+  const [ingressosComHotel, setIngressosComHotel] = useState([]);
+  
   let [cardPage, setCardPage] = useState(false);
 
   function encontrarTicketsPrincipais(arrayDeObjetos) {
@@ -49,8 +53,14 @@ export default function Payment() {
     const requisicao = axios.get(`${import.meta.env.VITE_API_URL}/tickets/types`, config);
 
     requisicao.then(resposta => {
-      const list = encontrarTicketsPrincipais(resposta.data)
-      setTicketType(list)
+      console.log(resposta.data)
+      setTicketType(resposta.data)
+
+      setIngressosSemHotel(resposta.data.filter(ticket => !ticket.includesHotel || ticket.isRemote));
+      setIngressosComHotel(resposta.data.filter(ticket => !ticket.isRemote));
+      //const list = encontrarTicketsPrincipais(resposta.data)
+      //console.log(list)
+      //setTicketType(list)
     })
     requisicao.catch(erro => {
       console.log((erro.data))
@@ -70,6 +80,8 @@ export default function Payment() {
     getSubscription()
   }, [])
 
+
+
   function selectTicket(ticket) {
     if (ticket.name == ticketSelected) {
       setTicketSelected(null)
@@ -80,34 +92,62 @@ export default function Payment() {
       setBookSelected(null)
     }
   }
-
   return (
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
 
       {subscription === true ? (
-        !cardPage ? (
-          <>
-            <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
-            <Buttons>
-            {ticketType?.map((ticketType) => <ModalityButton key={ticketType?.id} onClick={() => selectTicket(ticketType)} ticketSelected={ticketSelected?.name == ticketType?.name ? "selected" : "noSelected"}>
-                <h6>{ticketType?.name}</h6>
-                <p>R$ {ticketType?.price},00</p>
-              </ModalityButton>
-              )}
-              
-            </Buttons>
-            {!ticketSelected?.isRemote ? <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>: <></>}
+      !cardPage ? (
+        <>
+          <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
+          <Buttons>
+          {ingressosSemHotel.map((ticket) => (
+            <ModalityButton
+              key={ticket.id}
+              onClick={() =>{
+                selectTicket(ticket)
+                setTicket(ticket.isRemote)
+              }}
+              ticketSelected={ticketSelected?.name === ticket.name ? "selected" : "noSelected"}
+            >
+              <h7>{ticket.name.charAt(0).toUpperCase() + ticket.name.slice(1)}</h7>
+              <p>R$ {ticket.price},00</p>
+            </ModalityButton>
+          ))}            
+          </Buttons>
 
-            {!ticketSelected?.isRemote ? < OptionsPresencial setBookSelected={setBookSelected} hotel={hotel} setHotel={setHotel} /> : <></>}
-            {bookSelected||ticketSelected?.isRemote ? < ConfirmaBooking total={total} ticket={ticketSelected} setCardPage={setCardPage} setTicket={setTicket}/> : <></>}
-          </>          
-        ) : (
-          <PaymentComponent info={{isRemote: ticketSelected.isRemote, price: total, hotel: ticketSelected.includesHotel, ticket: ticket}}/>
-        )
+          {ticketSelected !== null && !ticketSelected.isRemote ? (
+            <>
+              <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>
+              <Buttons>
+                {ingressosComHotel.map((ticket) => (
+                  <ModalityButton
+                    key={ticket.id}                    
+                    onClick={() =>{
+                      setHotel(ticket.includesHotel);
+                      selectTicket(ticket);
+                    }}
+                    className={hotel === ticket.includesHotel ? 'selected' : ''}
+                    //ticketSelected={ticketSelected?.id === ticket.id ? "selected" : "noSelected"}
+                  >
+                    <h7>{ticket.includesHotel ? "Com Hotel" : "Sem Hotel"}</h7>
+                    <p> + R$ {ticket.price - ingressosSemHotel.find(t => t.name === ticket.name).price},00</p>
+                  </ModalityButton>
+                ))}
+              </Buttons>
+            </>
+          ) : null}
+          {(ticketSelected && ticket) || (ticketSelected && !ticket && hotel!== null) ? (
+            <ConfirmaBooking total={total} ticket={ticketSelected} setCardPage={setCardPage} setTicket={setTicket}/>
+          ) : null}
+
+        </>
       ) : (
+        <PaymentComponent info={{isRemote: ticketSelected?.isRemote, price: total, hotel: ticketSelected?.includesHotel, ticket: ticket}}/>
+      )) : (
         <WarningMessage message="Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso" />
-      )}
+      )
+      }
     </>
   )
 
