@@ -4,12 +4,12 @@ import { useState, useEffect, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { Await, useNavigate } from 'react-router-dom';
 import useToken from '../../../hooks/useToken.js';
-import useEnrollment from '../../../hooks/api/useEnrollment';
+import useEnrollment from '../../../hooks/api/useEnrollment.js';
 import styled from 'styled-components';
 import axios from 'axios';
-import OptionsPresencial from '../../../components/Payment/OptionsPresencial';
-import ConfirmaBooking from '../../../components/Payment/ConfirmaBooking';
-
+import OptionsPresencial from '../../../components/Payment/OptionsPresencial.jsx';
+import ConfirmaBooking from '../../../components/Payment/ConfirmaBooking.jsx';
+import PaymentComponent from '../../../components/Payment/index.jsx';
 
 export default function Payment() {
 
@@ -17,7 +17,7 @@ export default function Payment() {
 
   const navigate = useNavigate()
   const [ticket, setTicket] = useState();
-  const [hotel, setHotel] = useState('');
+  const [hotel, setHotel] = useState(null);
   const [subscription, setSubscription] = useState(false);
   const token = useToken();
   let [total, setTotal ] = useState(null);
@@ -28,6 +28,7 @@ export default function Payment() {
   const [ingressosSemHotel, setIngressosSemHotel] = useState([]);
   const [ingressosComHotel, setIngressosComHotel] = useState([]);
   
+  let [cardPage, setCardPage] = useState(false);
 
   function encontrarTicketsPrincipais(arrayDeObjetos) {
     const objetosNaoRemotos = arrayDeObjetos.filter(objeto => objeto.isRemote === false);
@@ -96,6 +97,7 @@ export default function Payment() {
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
 
       {subscription === true ? (
+      !cardPage ? (
         <>
           <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
           <Buttons>
@@ -136,12 +138,16 @@ export default function Payment() {
             </>
           ) : null}
           {(ticketSelected && ticket) || (ticketSelected && !ticket && hotel!== null) ? (
-            <ConfirmaBooking total={total} ticket={ticketSelected} />
+            <ConfirmaBooking total={total} ticket={ticketSelected} setCardPage={setCardPage} setTicket={setTicket}/>
           ) : null}
+
         </>
       ) : (
+        <PaymentComponent info={{isRemote: ticketSelected?.isRemote, price: total, hotel: ticketSelected?.includesHotel, ticket: ticket}}/>
+      )) : (
         <WarningMessage message="Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso" />
-      )}
+      )
+      }
     </>
   )
 
