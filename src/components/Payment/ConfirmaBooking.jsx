@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { Await, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function ConfirmaBooking({total, ticket, setCardPage}) {
+export default function ConfirmaBooking({total, ticket, setCardPage, setTicket}) {
   const token = useToken();
 
   console.log(ticket)
@@ -26,6 +26,7 @@ export default function ConfirmaBooking({total, ticket, setCardPage}) {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/tickets`, body, config);
+      setTicket(response.data);
       toast('Informações salvas com sucesso!');
       setCardPage(true);
       return response.data;

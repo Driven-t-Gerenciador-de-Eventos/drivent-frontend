@@ -6,22 +6,30 @@ import Cards from 'react-credit-cards-2';
 import { FormWrapper } from '../PersonalInformationForm/FormWrapper';
 import { formatCreditCardNumber, formatCVC, formatExpirationDate } from './utils';
 import { toast } from 'react-toastify';
+import useToken from '../../hooks/useToken.js';
+import axios from 'axios';
 
 export default function PaymentForm(props) {
+    const token = useToken();
     const [state, setState] = useState({
         number: '',
         expiry: '',
         cvc: '',
         name: '',
-        focus: '',
-        issuer: ''
+        focus: ''
     });
+    const [issuer, setIssuer] = useState();
 
     const handleInputChange = (evt) => {
         let { name, value } = evt.target;
 
         if (name === "number") {
-            value = formatCreditCardNumber(value);
+            let obj = formatCreditCardNumber(value);
+            value = obj.value;
+
+            if(obj.issuerFound !== null) {
+                setIssuer(obj.issuerFound);
+            }
         } else if (name === "expiry") {
             value = formatExpirationDate(value);
         } else if (name === "cvc") {
@@ -35,12 +43,41 @@ export default function PaymentForm(props) {
         setState((prev) => ({ ...prev, focus: evt.target.name }));
     }
 
+    async function sendPaymentInfoToDB(body){
+        const config = {
+            headers: {
+            "Authorization": `Bearer ${token}`
+            }
+        }
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/payments/process`, body, config);
+            return response.data;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     const handleSubmit = e => {
         e.preventDefault();
-        const set = props.props[1];
-        set(true);
-        //salvar informações onde?
-        toast('Informações salvas com sucesso!');
+        const body = {ticketId: props.props[2].id,
+                cardData: {
+                    issuer: issuer,
+                    number: state.number,
+                    name: state.name,
+                    expirationDate: state.expiry,
+                    cvv: state.cvc
+                }};
+
+        try {
+            sendPaymentInfoToDB(body);
+            const set = props.props[1];
+            set(true);
+            toast('Pagamento realizado com sucesso!');
+        } catch (err) {
+            console.log(err)
+            toast('Não foi possível realizar o pagamento!');
+        }
     };
 
     return (
