@@ -4,12 +4,12 @@ import { useState, useEffect, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { Await, useNavigate } from 'react-router-dom';
 import useToken from '../../../hooks/useToken.js';
-import useEnrollment from '../../../hooks/api/useEnrollment';
+import useEnrollment from '../../../hooks/api/useEnrollment.js';
 import styled from 'styled-components';
 import axios from 'axios';
-import OptionsPresencial from '../../../components/Payment/OptionsPresencial';
-import ConfirmaBooking from '../../../components/Payment/ConfirmaBooking';
-
+import OptionsPresencial from '../../../components/Payment/OptionsPresencial.jsx';
+import ConfirmaBooking from '../../../components/Payment/ConfirmaBooking.jsx';
+import PaymentComponent from '../../../components/Payment/index.jsx';
 
 export default function Payment() {
 
@@ -24,6 +24,7 @@ export default function Payment() {
   let [ticketSelected, setTicketSelected] = useState(null);
   let [bookSelected, setBookSelected] = useState(null);
   let [ticketType, setTicketType] = useState();
+  let [cardPage, setCardPage] = useState(false);
 
   function encontrarTicketsPrincipais(arrayDeObjetos) {
     const objetosNaoRemotos = arrayDeObjetos.filter(objeto => objeto.isRemote === false);
@@ -85,21 +86,25 @@ export default function Payment() {
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
 
       {subscription === true ? (
-        <>
-          <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
-          <Buttons>
-          {ticketType?.map((ticketType) => <ModalityButton key={ticketType?.id} onClick={() => selectTicket(ticketType)} ticketSelected={ticketSelected?.name == ticketType?.name ? "selected" : "noSelected"}>
-              <h7>{ticketType?.name}</h7>
-              <p>R$ {ticketType?.price},00</p>
-            </ModalityButton>
-            )}
-            
-          </Buttons>
-          {!ticketSelected?.isRemote ? <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>: <></>}
+        !cardPage ? (
+          <>
+            <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
+            <Buttons>
+            {ticketType?.map((ticketType) => <ModalityButton key={ticketType?.id} onClick={() => selectTicket(ticketType)} ticketSelected={ticketSelected?.name == ticketType?.name ? "selected" : "noSelected"}>
+                <h6>{ticketType?.name}</h6>
+                <p>R$ {ticketType?.price},00</p>
+              </ModalityButton>
+              )}
+              
+            </Buttons>
+            {!ticketSelected?.isRemote ? <StyledTypography variant="h6">Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>: <></>}
 
-          {!ticketSelected?.isRemote ? < OptionsPresencial setBookSelected={setBookSelected} hotel={hotel} setHotel={setHotel} /> : <></>}
-          {bookSelected||ticketSelected?.isRemote ? < ConfirmaBooking total={total} ticket={ticketSelected} /> : <></>}
-        </>
+            {!ticketSelected?.isRemote ? < OptionsPresencial setBookSelected={setBookSelected} hotel={hotel} setHotel={setHotel} /> : <></>}
+            {bookSelected||ticketSelected?.isRemote ? < ConfirmaBooking total={total} ticket={ticketSelected} setCardPage={setCardPage} /> : <></>}
+          </>          
+        ) : (
+          <PaymentComponent info={{isRemote: ticketSelected.isRemote, price: total, hotel: ticketSelected.includesHotel}}/>
+        )
       ) : (
         <WarningMessage message="Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso" />
       )}
@@ -128,7 +133,7 @@ const ModalityButton = styled.div`
   margin-top:10px;
 
 
-  h7{
+  h6{
     color: #454545;
     font-size: 16px;
     margin-bottom: 3px;
