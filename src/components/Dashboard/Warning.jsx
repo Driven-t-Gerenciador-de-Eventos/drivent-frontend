@@ -15,5 +15,11 @@ const AlertDiv = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-   
+
+    h2{
+        color: #454545;
+        font-size: 20px;
+        text-align: center;
+        line-height: 120%;
+    }
 `

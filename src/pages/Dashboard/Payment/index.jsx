@@ -22,7 +22,6 @@ export default function Payment() {
 
   const token = useToken();
 
-  console.log(enrollment)
   let [ticketSelected, setTicketSelected] = useState(null);
   let [bookSelected, setBookSelected] = useState(null);
   let [ticketType, setTicketType] = useState();
@@ -80,16 +79,19 @@ export default function Payment() {
           <StyledTypography variant="h6">Primeiro, escolha sua modalidade de ingresso</StyledTypography>
           <Buttons>
             <ModalityButton onClick={() => selectTicket("Presencial")} ticketSelected={ticketSelected == "Presencial" ? "selected" : "noSelected"}>
-              <h7>Presencial</h7>
+              <h6>Presencial</h6>
               <p>Valor</p>
             </ModalityButton>
             <ModalityButton onClick={() => selectTicket("Online")} ticketSelected={ticketSelected == "Online" ? "selected" : "noSelected"}>
-              <h7>Online</h7>
+              <h6>Online</h6>
               <p>Valor</p>
             </ModalityButton>
           </Buttons>
 
-          {ticketSelected == "Presencial" ? < OptionsPresencial setBookSelected={setBookSelected} hotel={hotel} setHotel={setHotel} /> : <></>}
+          {ticketSelected == "Presencial" ? 
+            <OptionsPresencial setBookSelected={setBookSelected} hotel={hotel} setHotel={setHotel} />
+          : <>
+          </>}
           {bookSelected||ticketSelected == "Online"  ? < ConfirmaBooking /> : <></>}
         </>
       ) : (
@@ -120,7 +122,7 @@ const ModalityButton = styled.div`
   margin-top:10px;
 
 
-  h7{
+  h6{
     color: #454545;
     font-size: 16px;
     margin-bottom: 3px;

@@ -19,13 +19,13 @@ export default function OptionsPresencial({ setBookSelected, hotel, setHotel }) 
         <ModalityButton onClick={() => setHotel(false)}
           className={hotel === false ? 'selected' : ''}
         >
-          <h7>Sem Hotel</h7>
+          <h6>Sem Hotel</h6>
           <p>+ R$ 0</p>
         </ModalityButton>
         <ModalityButton onClick={() => setHotel(true)}
           className={hotel === true ? 'selected' : ''}
         >
-          <h7>Com Hotel</h7>
+          <h6>Com Hotel</h6>
           <p>+ R$ 350</p>
         </ModalityButton>
       </Buttons>
@@ -94,7 +94,7 @@ const ModalityButton = styled.div`
   justify-content: center;
   margin-right: 24px;
 
-  h7{
+  h6{
     color: #454545;
     font-size: 16px;
     margin-bottom: 3px;
