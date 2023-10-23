@@ -2,12 +2,11 @@ import Typography from '@mui/material/Typography';
 import styled from 'styled-components';
 
 export default function PaymentSummary(info){
-    console.log(info.props)
     return (
         <>
           <Typography variant="h6" color="#8E8E8E">Ingresso escolhido</Typography>
           <Summary>
-            <Typography variant="body1" color="#454545">{info.props.type} + {info.props.hotel ? "Com Hotel" : "Sem Hotel"}</Typography>
+            <Typography variant="body1" color="#454545">{info.props.isRemote ? "Online" : ("Presencial" + (info.props.hotel ? "Com Hotel" : "Sem Hotel"))}</Typography>
             <Typography variant="body2" color="#898989">R$ {info.props.price}</Typography>
           </Summary>
         </>

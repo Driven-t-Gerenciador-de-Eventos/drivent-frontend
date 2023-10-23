@@ -39,6 +39,7 @@ export default function PaymentForm(props) {
         e.preventDefault();
         const set = props.props[1];
         set(true);
+        //salvar informações onde?
         toast('Informações salvas com sucesso!');
     };
 
