@@ -5,8 +5,9 @@ import React, { useState } from 'react';
 import Cards from 'react-credit-cards-2';
 import { FormWrapper } from '../PersonalInformationForm/FormWrapper';
 import { formatCreditCardNumber, formatCVC, formatExpirationDate } from './utils';
+import { toast } from 'react-toastify';
 
-export default function PaymentForm() {
+export default function PaymentForm(props) {
     const [state, setState] = useState({
         number: '',
         expiry: '',
@@ -36,7 +37,9 @@ export default function PaymentForm() {
 
     const handleSubmit = e => {
         e.preventDefault();
-        alert("oi")
+        const set = props.props[1];
+        set(true);
+        toast('Informações salvas com sucesso!');
     };
 
     return (

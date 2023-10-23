@@ -1,15 +1,19 @@
 import { IoCheckmarkCircleSharp } from 'react-icons/io5';
 import styled from 'styled-components';
+import Typography from '@mui/material/Typography';
 
 export default function PaidMessage() {
   return (
-    <Container>
-      <Icon />
-      <AlignText>
-        <Title>Pagamento confirmado!</Title>
-        <Subtitle>Prossiga para escolha de hospedagem e atividades</Subtitle>
-      </AlignText>
-    </Container>
+    <>
+      <Typography variant="h6" color="#8E8E8E">Pagamento</Typography>
+      <Container>
+        <Icon />
+        <AlignText>
+          <Title>Pagamento confirmado!</Title>
+          <Subtitle>Prossiga para escolha de hospedagem e atividades</Subtitle>
+        </AlignText>
+      </Container>
+    </>
   );
 }
 
