@@ -1,95 +1,98 @@
-import Typography from '@mui/material/Typography';
-import HotelCard from './HotelCard';
+import { Button, Typography } from '@mui/material';
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
-import { getHotels, getHotelsWithRooms } from '../../../hooks/api/useHotel';
+import HotelCardBooking from './HotelCard/HotelCardBooking';
+import useBooking from '../../../hooks/api/useBooking';
+import { getHotels } from '../../../hooks/api/useHotel';
 import Loading from '../../../components/Loading';
-import WarningMessage from '../../../components/Dashboard/Warning.jsx';
-import useToken from '../../../hooks/useToken';
-import axios from 'axios';
+import HotelCard from './HotelCard';
+import { useEffect, useState } from 'react';
 import RoomList from './RoomList';
 
 export default function Hotel() {
+  const { booking, bookingLoading } = useBooking();
   const { hotels, hotelsLoading } = getHotels();
-  const [selectedHotel, setSelectedHotel] = useState();
-  const [hotelList, setHotelList] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
+
   const [renderRoomList, setRenderRoomList] = useState(null);
-
-  const token = useToken();
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+  const [selectedHotel, setSelectedHotel] = useState(null);
+  const [bookingSuccessful, setBookingSuccessful] = useState(false);
+  const [roomChange, setRoomChange] = useState(false);
+  const [roomBooking, setRoomBooking] = useState(null);
 
   useEffect(() => {
-    const requisicao = axios.get(`${import.meta.env.VITE_API_URL}/tickets`, config);
-
-    requisicao.then((resposta) => {
-      const ticket = resposta.data;
-      if (!ticket.TicketType.includesHotel) {
-        setErrorMessage('Sua modalidade de ingresso não inclui hospedagem. Prossiga para a escolha de atividades');
-      }
-
-      if (ticket.status !== 'PAID') {
-        setErrorMessage('Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem');
-      }
-    });
-    requisicao.catch((erro) => {
-      setErrorMessage('Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem');
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!hotelsLoading) {
-      setHotelList(hotels);
+    if (booking) {
+      setBookingSuccessful(true);
     }
-  }, [hotels]);
+  });
 
   function handleSelectHotel(hotel) {
     setSelectedHotel(hotel);
-    setRenderRoomList(<RoomList key={hotel.id} hotel={hotel} />);
+
+    setRenderRoomList(
+      <RoomList
+        key={hotel.id}
+        hotel={hotel}
+        userBooking={booking}
+        setBookingSuccessful={setBookingSuccessful}
+        roomChange={roomChange}
+        toogleRoomChange={toogleRoomChange}
+        setRoomBooking={setRoomBooking}
+      />
+    );
   }
 
-  return (
-    <>
-      <StyledTitleTypography variant="h4">Escolha de hotel e quarto</StyledTitleTypography>
+  function toogleRoomChange() {
+    setRoomChange(!roomChange);
+  }
 
-      {errorMessage ? (
-        <WarningMessage message={errorMessage} />
-      ) : (
-        <>
-          <StyledTypography variant="h6">Primeiro, escolha seu hotel</StyledTypography>
+  if (bookingLoading || hotelsLoading) {
+    return (
+      <StyledDivLoading>
+        <Loading />
+      </StyledDivLoading>
+    );
+  }
 
-          {hotelsLoading ? (
-            <StyledDivLoading>
-              <Loading />
-            </StyledDivLoading>
-          ) : (
-            <StyledCardList>
-              {hotelList.map((hotel) => (
-                <HotelCard
-                  key={hotel.id}
-                  hotel={hotel}
-                  selectHotel={handleSelectHotel}
-                  isSelected={hotel.id === selectedHotel?.id}
-                />
-              ))}
-            </StyledCardList>
-          )}
-        </>
-      )}
+  if (booking && hotels && bookingSuccessful && !roomChange) {
+    const bookedRoom = roomBooking || booking?.Room;
+    const bookedHotel = hotels.find((h) => h.id === bookedRoom.hotelId);
 
-      {selectedHotel && (
-        <>
-          <StyledTypography variant="h6">Ótima pedida! Agora escolha seu quarto:</StyledTypography>
-          {renderRoomList}
-        </>
-      )}
-    </>
-  );
+    return (
+      <>
+        <StyledTitleTypography variant="h4">Escolha de hotel e quarto</StyledTitleTypography>
+        <StyledTypography variant="h6">Você já escolheu seu quarto:</StyledTypography>
+        <HotelCardBooking hotel={bookedHotel} room={bookedRoom} />
+        <StyledButton variant="contained" onClick={() => toogleRoomChange()}>
+          TROCAR QUARTO
+        </StyledButton>
+      </>
+    );
+  }
+
+  if (hotels) {
+    return (
+      <>
+        <StyledTitleTypography variant="h4">Escolha de hotel e quarto</StyledTitleTypography>
+        <StyledTypography variant="h6">Primeiro, escolha seu hotel</StyledTypography>
+        <StyledCardList>
+          {hotels.map((hotel) => (
+            <HotelCard
+              key={hotel.id}
+              hotel={hotel}
+              selectHotel={handleSelectHotel}
+              isSelected={hotel.id === selectedHotel?.id}
+            />
+          ))}
+        </StyledCardList>
+
+        {selectedHotel && (
+          <>
+            <StyledTypography variant="h6">Ótima pedida! Agora escolha seu quarto:</StyledTypography>
+            {renderRoomList}
+          </>
+        )}
+      </>
+    );
+  }
 }
 
 const StyledTitleTypography = styled(Typography)`
@@ -113,8 +116,21 @@ const StyledCardList = styled.div`
 
 const StyledDivLoading = styled.div`
   width: 100%;
-  margin-top: 100px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const StyledButton = styled(Button)`
+  width: auto;
+  height: 40px;
+  border-radius: 4px !important;
+  background: #e0e0e0 !important;
+  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.25) !important;
+  color: #000 !important;
+  font-size: 14px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  margin-top: 40px !important;
 `;
